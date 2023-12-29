@@ -3,32 +3,32 @@
 #include<iomanip>
 using namespace std;
 
-#define MAXKVAL 16		  //ÄÚ´æ¿é×î´ó¼¶Êı
+#define MAXKVAL 16		  //å†…å­˜å—æœ€å¤§çº§æ•°
 
-//×ÜÄÚ´æ
+//æ€»å†…å­˜
 struct Memory {
 	int Size;
 	int SystemAreaSize;
 	int UserAreaSize;
 };
 
-//ÄÚ´æ¿é
-struct Block {//³õÊ¼×´Ì¬µÄBlock×óÓÒÖ¸ÕëÖ¸Ïò×Ô¼º
-	int kval;//¼¶Êı
+//å†…å­˜å—
+struct Block {//åˆå§‹çŠ¶æ€çš„Blockå·¦å³æŒ‡é’ˆæŒ‡å‘è‡ªå·±
+	int kval;//çº§æ•°
 	struct Block* rlink;
 	struct Block* llink;
 	int address;
 };
 
-class BlockManager {//¿ØÖÆblockÔÚ¿ÉÓÃ±íÉÏµÄpushºÍpop
+class BlockManager {//æ§åˆ¶blockåœ¨å¯ç”¨è¡¨ä¸Šçš„pushå’Œpop
 public:
-	void pushBlock(Block* block, Block* availList[]) {//°Ñblock²åÈë¿ÉÓÃ±í¶ÔÓ¦´óĞ¡Á´±íµÄ¶ÓÊ×
+	void pushBlock(Block* block, Block* availList[]) {//æŠŠblockæ’å…¥å¯ç”¨è¡¨å¯¹åº”å¤§å°é“¾è¡¨çš„é˜Ÿé¦–
 		block->rlink = availList[block->kval]->rlink;
 		block->llink = availList[block->kval];
 		block->rlink->llink = block;
 		block->llink->rlink = block;
 	}
-	void popBlock(Block* block, Block* availList[]) {//ÔÚ¿ÉÓÃ±íÖĞÉ¾³ı½áµã,µ«Ã»delete block£¬´ËÊ±block×óÓÒÖ¸ÕëÖ¸Ïò×Ô¼º
+	void popBlock(Block* block, Block* availList[]) {//åœ¨å¯ç”¨è¡¨ä¸­åˆ é™¤ç»“ç‚¹,ä½†æ²¡delete blockï¼Œæ­¤æ—¶blockå·¦å³æŒ‡é’ˆæŒ‡å‘è‡ªå·±
 		block->llink->rlink = block->rlink;
 		block->rlink->llink = block->llink;
 		block->llink = block->rlink = block;
@@ -38,53 +38,53 @@ public:
 class MemoryManager {
 private:
     struct Memory memory;
-	struct Block* availList[MAXKVAL + 1];//ÄÚ´æ¿ÉÓÃ±í
+	struct Block* availList[MAXKVAL + 1];//å†…å­˜å¯ç”¨è¡¨
 	BlockManager BM;
 public:
 	MemoryManager() {
-		//³õÊ¼»¯ÄÚ´æ¿ÉÓÃ±í
+		//åˆå§‹åŒ–å†…å­˜å¯ç”¨è¡¨
 		for (int i = 0; i < MAXKVAL + 1; i++) {
-			availList[i] = new Block{ i,NULL,NULL ,-1 };//µØÖ·ÎŞÓÃ¼ÇÎª-1
+			availList[i] = new Block{ i,NULL,NULL ,-1 };//åœ°å€æ— ç”¨è®°ä¸º-1
 			availList[i]->llink = availList[i]->rlink = availList[i];
 		}
-		//´´½¨Ò»¸ö³õÊ¼ÄÚ´æ¿é
+		//åˆ›å»ºä¸€ä¸ªåˆå§‹å†…å­˜å—
 		struct Block* initBlock = new Block{ MAXKVAL,availList[MAXKVAL],availList[MAXKVAL],0 };
 		availList[MAXKVAL]->llink = availList[MAXKVAL]->rlink = initBlock;
-		//³õÊ¼»¯·ÖÇø´óĞ¡
+		//åˆå§‹åŒ–åˆ†åŒºå¤§å°
 		memory.Size = (int)pow(2, MAXKVAL);
-		memory.SystemAreaSize = (int)pow(2, MAXKVAL - 2);//Ä¿Ç°Éè¶¨ÎªÏµÍ³Çø´óĞ¡±ÈÓÃ»§ÇøÎª1£º3
+		memory.SystemAreaSize = (int)pow(2, MAXKVAL - 2);//ç›®å‰è®¾å®šä¸ºç³»ç»ŸåŒºå¤§å°æ¯”ç”¨æˆ·åŒºä¸º1ï¼š3
 		memory.UserAreaSize = memory.Size - memory.SystemAreaSize;
-		//´Ó¿ÉÓÃ±íÖĞÉêÇëÒ»¸öÏµÍ³Çø
+		//ä»å¯ç”¨è¡¨ä¸­ç”³è¯·ä¸€ä¸ªç³»ç»ŸåŒº
 		if (alloc(memory.SystemAreaSize) == NULL) {
-			cout << "ÏµÍ³ÇøÆô¶¯Ê§°Ü£¡" << endl;
+			cout << "ç³»ç»ŸåŒºå¯åŠ¨å¤±è´¥ï¼" << endl;
 		}
 	}
-	struct Block* alloc(int size) {//ÉêÇë´óĞ¡ÎªsizeµÄÄÚ´æblock£¬Èô·ÖÅäÊ§°Ü£¬·µ»ØNULL£¬Èô³É¹¦Ôò·µ»Ø¶ÔÓ¦´óĞ¡blockÖ¸Õë
-		//ÄÚ´æ·ÖÅäÊ±ÓÅÏÈ·ÖÅä¸ßµØÖ·
+	struct Block* alloc(int size) {//ç”³è¯·å¤§å°ä¸ºsizeçš„å†…å­˜blockï¼Œè‹¥åˆ†é…å¤±è´¥ï¼Œè¿”å›NULLï¼Œè‹¥æˆåŠŸåˆ™è¿”å›å¯¹åº”å¤§å°blockæŒ‡é’ˆ
+		//å†…å­˜åˆ†é…æ—¶ä¼˜å…ˆåˆ†é…é«˜åœ°å€
 		int i;
-		for (i = 0; i < MAXKVAL + 1 && ((int)pow(2, i) < size || availList[i]->rlink == availList[i]); i++);//ÕÒµ½µÚÒ»¸ö·ûºÏ´óĞ¡ÇÒ²»¿ÕµÄ±íÍ·
-		if (i > MAXKVAL) {//ÄÚ´æ²»×ã·ÖÅäÊ§°Ü£¡
+		for (i = 0; i < MAXKVAL + 1 && ((int)pow(2, i) < size || availList[i]->rlink == availList[i]); i++);//æ‰¾åˆ°ç¬¬ä¸€ä¸ªç¬¦åˆå¤§å°ä¸”ä¸ç©ºçš„è¡¨å¤´
+		if (i > MAXKVAL) {//å†…å­˜ä¸è¶³åˆ†é…å¤±è´¥ï¼
 			return NULL;
 		}
-		struct Block* allocBlock = availList[i]->rlink;//Ö¸Ïò±»·ÖÅäµÄBlock
+		struct Block* allocBlock = availList[i]->rlink;//æŒ‡å‘è¢«åˆ†é…çš„Block
 		BM.popBlock(allocBlock, availList);
-		//½áµã´Ó¿ÉÓÃ±íÖĞÉ¾³ı£¬¿ªÊ¼Ìí¼ÓĞÂµÄĞ¡½áµã,Í¬Ê±ĞŞ¸ÄallocBlock²ÎÊı
-		struct Block* newBlock;//Ö¸ÏòĞÂ´´½¨µÄBlock
+		//ç»“ç‚¹ä»å¯ç”¨è¡¨ä¸­åˆ é™¤ï¼Œå¼€å§‹æ·»åŠ æ–°çš„å°ç»“ç‚¹,åŒæ—¶ä¿®æ”¹allocBlockå‚æ•°
+		struct Block* newBlock;//æŒ‡å‘æ–°åˆ›å»ºçš„Block
 		for (int j = 1; i >= j && (int)pow(2, availList[i - j]->kval) >= size; j++) {
-			newBlock = new Block{ i - j,NULL,NULL,allocBlock->address };//´´½¨ĞÂµÄĞ¡½áµã
+			newBlock = new Block{ i - j,NULL,NULL,allocBlock->address };//åˆ›å»ºæ–°çš„å°ç»“ç‚¹
 			newBlock->llink = newBlock->rlink = newBlock;
-			BM.pushBlock(newBlock, availList);//°ÑĞÂµÄĞ¡½áµã²åÈë±íÍ·
-			// ĞŞ¸ÄallocBlock²ÎÊı
+			BM.pushBlock(newBlock, availList);//æŠŠæ–°çš„å°ç»“ç‚¹æ’å…¥è¡¨å¤´
+			// ä¿®æ”¹allocBlockå‚æ•°
 			allocBlock->address += (int)pow(2, newBlock->kval);
 			allocBlock->kval--;
 		}
 		return allocBlock;
 	};
 	void release(struct Block* block) {
-		//ÊÍ·ÅÍê±Ïºóblock»áÖ¸ÏòNULL
+		//é‡Šæ”¾å®Œæ¯•åblockä¼šæŒ‡å‘NULL
 		while (block != NULL) {
 			if (availList[block->kval]->rlink != availList[block->kval]) {
-				//Ñ°ÕÒ»ï°é£¬ÏÈ»ñµÃ»ï°éµØÖ·
+				//å¯»æ‰¾ä¼™ä¼´ï¼Œå…ˆè·å¾—ä¼™ä¼´åœ°å€
 				int buddyAddress = block->address;
 				if (block->address % (int)pow(2, block->kval + 1)) {
 					buddyAddress -= (int)pow(2, block->kval);
@@ -92,14 +92,14 @@ public:
 				else {
 					buddyAddress += (int)pow(2, block->kval);
 				}
-				//¸ù¾İ»ï°éµØÖ·±éÀú¿ÉÓÃ±íÕÒ»ï°é
-				struct Block* buddy;//Ö¸Ïò»ï°é
-				for (buddy = availList[block->kval]->rlink; buddy->address != buddyAddress && buddy != availList[block->kval]; buddy = buddy->rlink);//Ñ°ÕÒ»ï°é
-				if (buddy == availList[block->kval]) {//ÈôÒÑ¾­È«²¿±éÀúÍê£¬ËµÃ÷ÎŞ»ï°é
+				//æ ¹æ®ä¼™ä¼´åœ°å€éå†å¯ç”¨è¡¨æ‰¾ä¼™ä¼´
+				struct Block* buddy;//æŒ‡å‘ä¼™ä¼´
+				for (buddy = availList[block->kval]->rlink; buddy->address != buddyAddress && buddy != availList[block->kval]; buddy = buddy->rlink);//å¯»æ‰¾ä¼™ä¼´
+				if (buddy == availList[block->kval]) {//è‹¥å·²ç»å…¨éƒ¨éå†å®Œï¼Œè¯´æ˜æ— ä¼™ä¼´
 					BM.pushBlock(block, availList);
 					block = NULL;
 				}
-				else {//ÕÒµ½»ï°é,½«Æä½áµã´Ó¿ÉÓÃ±íÖĞÉ¾³ı²¢ºÏ²¢ÖÁblockÖĞ£¬²¢ÖØ¸´Ñ­»·Ñ°ÕÒĞÂºÏ²¢ºóblockµÄ»ï°é
+				else {//æ‰¾åˆ°ä¼™ä¼´,å°†å…¶ç»“ç‚¹ä»å¯ç”¨è¡¨ä¸­åˆ é™¤å¹¶åˆå¹¶è‡³blockä¸­ï¼Œå¹¶é‡å¤å¾ªç¯å¯»æ‰¾æ–°åˆå¹¶åblockçš„ä¼™ä¼´
 					BM.popBlock(buddy, availList);
 					delete buddy;
 					block->kval++;
@@ -108,53 +108,53 @@ public:
 					}
 				}
 			}
-			else {//ÈôÎª¿Õ£¬Ö±½ÓÁ´½ÓÖÁ±íÍ·¼´¿É£¬²¢ÇÒÃ»ÓĞ»ï°é
+			else {//è‹¥ä¸ºç©ºï¼Œç›´æ¥é“¾æ¥è‡³è¡¨å¤´å³å¯ï¼Œå¹¶ä¸”æ²¡æœ‰ä¼™ä¼´
 				BM.pushBlock(block, availList);
 				block = NULL;
 			}
 		}
 	}
-	void show() {//½ö×ö²âÊÔÊ¹ÓÃ
+	void show() {//ä»…åšæµ‹è¯•ä½¿ç”¨
 		for (int i = 0; i < MAXKVAL + 1; i++) {
-			cout << "µÚ" << setw(2) << i << "²ã:" << ' ';
+			cout << "ç¬¬" << setw(2) << i << "å±‚:" << ' ';
 			for (Block* j = availList[i]->rlink; j != availList[i]; j = j->rlink) {
-				cout << setw(2) << availList[i]->kval << ' ' << "µØÖ·" << j->address << "  ";
+				cout << setw(2) << availList[i]->kval << ' ' << "åœ°å€" << j->address << "  ";
 			}
 			cout << endl;
 		}
 	}
 	~MemoryManager() {
-		//±éÀú¿ÉÓÃ±ídeleteËùÓĞ½áµã
-		struct Block* deleteBlock;//Ö¸Ïò¼´½«±»deleteµÄblock
+		//éå†å¯ç”¨è¡¨deleteæ‰€æœ‰ç»“ç‚¹
+		struct Block* deleteBlock;//æŒ‡å‘å³å°†è¢«deleteçš„block
 		for (int i = 0; i < MAXKVAL + 1; i++) {
 			while (availList[i]->rlink != availList[i]) {
 				deleteBlock = availList[i]->rlink;
 				BM.popBlock(deleteBlock, availList);
 				delete deleteBlock;
 			}
-			delete availList[i];//É¾³ıÍ·½áµã
+			delete availList[i];//åˆ é™¤å¤´ç»“ç‚¹
 		}
 	}
 };
 
-void MemoryManager_test() {//½ö×ö²âÊÔÊ¹ÓÃ
+void MemoryManager_test() {//ä»…åšæµ‹è¯•ä½¿ç”¨
 	MemoryManager MM;
 	int sel=3;
 	int size;
 	while (sel != 0) {
-		cout << "µ¥Ôª²âÊÔ" << endl;
+		cout << "å•å…ƒæµ‹è¯•" << endl;
 		MM.show();
-		cout << "ÇëÊäÈëÄúµÄÑ¡Ôñ¡ª¡ª1.ÉêÇëÄÚ´æ 2.ÊÍ·ÅÄÚ´æ 0.ÍË³ö" << endl;
+		cout << "è¯·è¾“å…¥æ‚¨çš„é€‰æ‹©â€”â€”1.ç”³è¯·å†…å­˜ 2.é‡Šæ”¾å†…å­˜ 0.é€€å‡º" << endl;
 		cin >> sel;
 		switch (sel)
 		{
 		case 1:
-			cout << "ÇëÊäÈëÉêÇëÄÚ´æ´óĞ¡" << endl;
+			cout << "è¯·è¾“å…¥ç”³è¯·å†…å­˜å¤§å°" << endl;
 			cin >> size;
 			MM.alloc(size);
 			break;
 		case 2: {
-			cout << "ÇëÊäÈëÊÍ·ÅÄÚ´æ´óĞ¡ºÍµØÖ·,ÖĞ¼äÓÃ¿Õ¸ñ¸ô¿ª" << endl;
+			cout << "è¯·è¾“å…¥é‡Šæ”¾å†…å­˜å¤§å°å’Œåœ°å€,ä¸­é—´ç”¨ç©ºæ ¼éš”å¼€" << endl;
 			int address;
 			cin >> size >> address;
 			int kval;
@@ -165,17 +165,11 @@ void MemoryManager_test() {//½ö×ö²âÊÔÊ¹ÓÃ
 			break;
 		}
 		case 0:
-			cout << "ÍË³ö³É¹¦£¡" << endl;
+			cout << "é€€å‡ºæˆåŠŸï¼" << endl;
 		default:
-			cout << "ÊäÈë´íÎó" << endl;
+			cout << "è¾“å…¥é”™è¯¯" << endl;
 			break;
 		}
 		system("cls");
 	}
-}
-
-int main() {
-	//MemoryManager_test();
-	system("pause");
-	return 0;
 }
