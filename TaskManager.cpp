@@ -1,135 +1,7 @@
-#include<math.h>
-#include<iostream>
-#include<queue>
-#include<iomanip>
+#include"ProcessManager.h"
+#include"MemoryManager.h"
+#include"DeviceManager.h"
 using namespace std;
-
-#define MAXKVAL 16		  //ÄÚ´æ¿é×î´ó¼¶Êı
-#define DEVICENUM 100
-
-//×ÜÄÚ´æ
-struct Memory {
-	int Size;
-	int SystemAreaSize;
-	int UserAreaSize;
-};
-
-//ÄÚ´æ¿é
-struct Block {//³õÊ¼×´Ì¬µÄBlock×óÓÒÖ¸ÕëÖ¸Ïò×Ô¼º
-	int kval;//¼¶Êı
-	struct Block* rlink;
-	struct Block* llink;
-	int address;
-};
-
-struct PCB {
-	int PID;
-	string PName;
-	string UserID;
-	enum State State;
-	int Priority;
-	int StartAdd;
-	struct RunInfo PRunInfo;  //½ø³ÌÔËĞĞĞÅÏ¢ÃèÊö
-	int size;
-	struct Block* PBlock;
-	struct PCB* next;
-};
-
-struct RunInfo {
-	double RequireTime; //×Ü¹²ĞèÒªµÄÊ±¼ä
-	double OccupyTime;  //Õ¼ÓÃCPUµÄÊ±¼ä
-	double DeviceRunInfo[2][DEVICENUM];
-	//0±íÊ¾Éè±¸×Ü¹²ĞèÒªÊ±¼ä£¬1±íÊ¾Éè±¸¿ªÊ¼Ê¹ÓÃÊ±¼ä 
-};
-
-enum State {
-	CREATED,
-	REDEAY,
-	OBSTRUCTED
-};
-
-typedef struct {
-	PCB* front;
-	PCB* rear;
-}PCB_Queue;
-
-struct interrupt {
-	int semaphore;
-	int DeviceNo;
-	double OccupyTime;
-};
-
-class BlockManager {//¿ØÖÆblockÔÚ¿ÉÓÃ±íÉÏµÄpushºÍpop
-public:
-	void pushBlock(Block* block, Block* availList[]);
-	void popBlock(Block* block, Block* availList[]);
-};
-
-class MemoryManager {
-private:
-	struct Memory memory;
-	struct Block* availList[MAXKVAL + 1];//ÄÚ´æ¿ÉÓÃ±í
-	BlockManager BM;
-public:
-	MemoryManager();
-	struct Block* alloc(int size);
-	void release(struct Block* block);
-	~MemoryManager();
-};
-
-class ProcessManager {
-private:
-	PCB_Queue Created_PCBQueue;   //"ĞÂ½¨"¶ÓÁĞ
-	PCB_Queue Ready_PCBQueue[2];  //"¾ÍĞ÷"¶ÓÁĞ
-	//ÏßĞÔÓÅÏÈ¼¶Ëã·¨;0±íÊ¾ĞÂ´´½¨½ø³Ì¶ÓÁĞ£¬1±íÊ¾ÏíÊÜ·şÎñ¶ÓÁĞ
-	struct PCB* Obstruct_PCBList[DEVICENUM]; //"×èÈû"±íµ¥
-
-public:
-
-	PCB* getCreatedProcess(PCB* process = nullptr);                //»ñÈ¡ĞÂ½¨½ø³Ì,Ö»¶Á
-
-	void popCreatedProcess(PCB* process);     //´ÓĞÂ½¨¶ÓÁĞÖĞÈ¡³öÀ´
-
-	void putProcessReady(PCB* process, bool New);         //·ÅÈë¾ÍĞ÷¶ÓÁĞ:ĞÂ´´½¨½¨½ø³Ì¶ÓÁĞ£¨true£©+ÏíÊÜ·şÎñ¶ÓÁĞ(false)
-
-	PCB* popProcessObstruct(int DeviceNo);     //»ñÈ¡½ø³Ì 
-
-	void putProcessObstruct(PCB* process, int DeviceNo);  //·ÅÈë×èÈû¶ÓÁĞ
-
-	bool createProcess(int PID, string PName, string UserID, int Priority, struct RunInfo PRunInfo); //´´½¨½ø³Ì
-
-	struct PCB* dispatchProcess(); //µ÷¶È½ø³Ì
-
-
-	struct interrupt runProcess(struct PCB* process); //Ö´ĞĞ0.1¸öÊ±¼äÆ¬£¬°ş¶á´¦Àí»ú(true)+²»°ş¶á´¦Àí»ú(false)
-	/* ·µ»ØÖµ£º
-	 * 0: Õı³£ÔËĞĞ£¨Î´ÊÍ·ÅCPU£©
-	 * 1: ×èÈû£¨ÊÍ·Å£©
-	 * 2: ÖÕÖ¹£¨ÊÍ·Å£©
-	 */
-
-	void deleteProcess(PCB* process);
-
-	ProcessManager();
-	~ProcessManager();
-};
-
-class DeviceManager {
-private:
-	queue<double> DeviceState[DEVICENUM];  // Éè±¸×´Ì¬
-
-public:
-	// ¹¹Ôìº¯Êı
-	DeviceManager();
-
-	void occupyDevice(int DeviceNo, double Time);
-	//Ê¹ÓÃÉè±¸£ºÔÙ¶ÔÓ¦Éè±¸ºÅµÄqueue¶ÓÎ²¼ÓÉÏÒ»¸öTime 
-
-	vector<int> runDevice(); //ËùÓĞÉè±¸Ê±¼ä¼õÉÙ0.1;
-	//ÔËĞĞÉè±¸£º°ÑÊ¹ÓÃÖĞÉè±¸µÄqueue¶ÓÊ×ÔªËØ¼õÈ¥0.1£¬²¢·µ»ØÔÚ¸Ã²Ù×÷ºó¶ÓÊ×ÔªËØÎª0µÄÉè±¸ºÅ£¬×îºóÉ¾³ı¸Ã¶ÓÊ×ÔªËØ 
-	//Éè±¸ºÅÓÃvector´«Êä£¬¼ÇÂ¼ËùÓĞ³öÏÖÉÏÊöÇé¿öµÄÉè±¸ºÅ 
-
-};
 
 class TaskManager {
 private:
@@ -137,17 +9,17 @@ private:
 	ProcessManager PM;
 	DeviceManager DM;
 	struct PCB* CPU;
-	int timeslice;
+	double timeslice;
 public:
 	TaskManager() {
 		CPU = NULL;
 		timeslice = 0;
 	}
 	void input(){
-		//ÊäÈë½ø³Ì²¢´´½¨
+		//è¾“å…¥è¿›ç¨‹å¹¶åˆ›å»º
 	}
 	void allocateMemory() {
-		//³¢ÊÔÎªĞÂ½¨½ø³ÌÖĞµÄÃ¿Ò»¸ö½ø³Ì·ÖÅäÒ»´ÎÄÚ´æ
+		//å°è¯•ä¸ºæ–°å»ºè¿›ç¨‹ä¸­çš„æ¯ä¸€ä¸ªè¿›ç¨‹åˆ†é…ä¸€æ¬¡å†…å­˜
 		struct PCB* tryAllocPCB = NULL;
 		while ((tryAllocPCB = PM.getCreatedProcess(tryAllocPCB)) != NULL) {
 			if ((tryAllocPCB->PBlock = MM.alloc(tryAllocPCB->size)) != NULL) {
@@ -157,14 +29,14 @@ public:
 		}
 	}
 	void run() {
-		//ÔËĞĞ½ø³ÌºÍÉè±¸
+		//è¿è¡Œè¿›ç¨‹å’Œè®¾å¤‡
 		if (CPU == NULL) {
 			CPU = PM.dispatchProcess();
 			timeslice = 0;
 		}
 		struct interrupt intSemaphore = PM.runProcess(CPU);
 		vector<int>doneDeviceNo = DM.runDevice();
-		timeslice++;
+		timeslice += 0.1;
 		if (intSemaphore.semaphore == 1) {
 			PM.putProcessObstruct(CPU, intSemaphore.DeviceNo);
 			DM.occupyDevice(intSemaphore.DeviceNo, intSemaphore.OccupyTime);
@@ -176,13 +48,13 @@ public:
 			CPU = NULL;
 		}
 		else {
-			if (timeslice == 10) {
+			if (timeslice == 1) {
 				PM.putProcessReady(CPU, false);
 				CPU = NULL;
 			}
 		}
 		for (int i = 0; i < doneDeviceNo.size(); i++) {
-			PM.putProcessReady(PM.popProcessObstruct(doneDeviceNo[i]), false);
+			PM.popProcessObstruct(doneDeviceNo[i]);
 		}
 	}
 	~TaskManager() {
@@ -191,5 +63,7 @@ public:
 };
 
 int main() {
+	TaskManager TM;
+	system("pause");
 	return 0;
 }
