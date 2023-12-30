@@ -1,6 +1,7 @@
 #pragma once
 
 #include<iostream>
+#include<math.h>
 using std::string;
 
 #define MAXKVAL 16		  //内存块最大级数
@@ -23,6 +24,19 @@ struct Block {//初始状态的Block左右指针指向自己
 	int address;
 };
 
+enum State {
+    CREATED,
+    REDEAY,
+    OBSTRUCTED
+};
+
+struct RunInfo {
+    double RequireTime; //总共需要的时间
+    double OccupyTime;  //占用CPU的时间
+    double DeviceRunInfo[2][DEVICENUM];
+    //0表示设备总共需要时间，1表示设备开始使用时间
+};
+
 struct PCB {
 	int PID;
 	string PName;
@@ -36,18 +50,6 @@ struct PCB {
 	struct PCB* next;
 };
 
-struct RunInfo {
-	double RequireTime; //总共需要的时间
-	double OccupyTime;  //占用CPU的时间
-	double DeviceRunInfo[2][DEVICENUM];
-	//0表示设备总共需要时间，1表示设备开始使用时间 
-};
-
-enum State {
-	CREATED,
-	REDEAY,
-	OBSTRUCTED
-};
 
 //PCB队列
 typedef struct {
