@@ -1,36 +1,38 @@
-#define DEVICENUM 100
+#include"DeviceManager.h"
 
-class DeviceManager {
-private:
-    bool DeviceState[DEVICENUM];  // 设备状态
+DeviceManager::DeviceManager() {
+    for (int i = 0; i < DEVICENUM; i++) {
+        DeviceState[i] = queue<double>(); // 创建空队列
+    }
+}
 
-public:
-    // 构造函数
-    DeviceManager() {
-        // 初始化设备状态，默认为未使用
-        for (int i = 0; i < DEVICENUM; i++) {
-            DeviceState[i] = false;
+void DeviceManager::occupyDevice(int DeviceNo, double Time) {
+    if (DeviceNo >= 0 && DeviceNo < DEVICENUM) {
+        DeviceState[DeviceNo].push(Time);//将占用时间加入状态队列
+    }
+    else {
+        // 处理设备编号超出范围的情况
+        cout << "设备编号超出范围。" << endl;
+    }
+}
+
+vector<int> DeviceManager::runDevice() {
+    vector<int> finishedDevices;
+
+    for (int i = 0; i < DEVICENUM; i++) {
+        if (!DeviceState[i].empty()) {
+            double remainingTime = DeviceState[i].front();
+            remainingTime -= 0.1;//若设备状态队列不为空，表示设备正在运行，取出队首，剩余时间减一
+
+            if (remainingTime <= 0) {
+                finishedDevices.push_back(i);
+                DeviceState[i].pop();//设备任务完成
+            }
+            else {
+                DeviceState[i].front() = remainingTime;
+            }
         }
     }
-    
-    // 检查设备状态
-    bool checkState(int DeviceNo) {
-        if (DeviceNo >= 0 && DeviceNo < DEVICENUM) {
-            return DeviceState[DeviceNo];
-        } else {
-            // 处理设备编号超出范围的情况
-            return false;
-        }
-    }
-    
-    // 更新设备状态
-    void updateState(int DeviceNo, bool State) {
-        if (DeviceNo >= 0 && DeviceNo < DEVICENUM) {
-            DeviceState[DeviceNo] = State;
-        } else {
-            // 处理设备编号超出范围的情况
-            cout << "设备编号超出范围。" << endl;
-        }
-    }
 
-};
+    return finishedDevices;
+}
