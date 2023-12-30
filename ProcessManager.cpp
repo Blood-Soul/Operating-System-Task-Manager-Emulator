@@ -174,22 +174,22 @@ ProcessManager::~ProcessManager() {
     PCB* front1 = this->Ready_PCBQueue[1].front;
     PCB* rear1 = this->Ready_PCBQueue[1].rear;
     while (front0 != rear0) {
-        struct PCB* temp = front0;
-        front0 = front0->next;
+        struct PCB* temp = front0->next;
+        front0->next = temp->next;
+        if(temp == rear0) rear0 = front0;
         delete temp->PBlock;
         delete temp;
     }
-    delete front0->PBlock;
     delete front0;
     while (front1 != rear1) {
-        struct PCB* temp = front1;
-        front1 = front1->next;
+        struct PCB* temp = front1->next;
+        front1->next = temp->next;
+        if(temp == rear1) rear1 = front1;
         delete temp->PBlock;
         delete temp;
     }
-    delete front1->PBlock;
     delete front1;
-
+    
     //"阻塞"队列析构
     for (int i = 0; i < DEVICENUM; i++) {
         if (this->Obstruct_PCBList[i] != nullptr) {
