@@ -47,7 +47,7 @@ public:
 			struct interrupt intSemaphore = PM.runProcess(CPU);
 			vector<int>doneDeviceNo = DM.runDevice();
 			timeslice++;
-			cout << intSemaphore.semaphore << endl;
+			//cout << intSemaphore.semaphore << endl;
 			if (intSemaphore.semaphore == 1) {
 				cout << CPU->PID << "进程中断" << endl;//仅做测试使用
 				PM.putProcessObstruct(CPU, intSemaphore.DeviceNo);
@@ -80,15 +80,20 @@ public:
 int main() {
 	TaskManager TM;
 	RunInfo ri;
-	ri.RequireTime = 5;
+	ri.RequireTime = 7;
 	ri.OccupyTime = 0;
 	for (int i = 0; i < DEVICENUM; i++) {
 		ri.DeviceRunInfo[0][i] = ri.DeviceRunInfo[1][i] = 0;
 	}
 	for (int i = 0; i < 5; i++) {
-		TM.input(i, "a" + i, "xbj", 3, ri, 10);
+		ri.DeviceRunInfo[0][i] = i;
+		ri.DeviceRunInfo[1][i] = 2;
+		TM.input(i, "a" + i, "xbj", 3, ri, 1000);
+		//ri.DeviceRunInfo[0][i] = 0;
+		ri.DeviceRunInfo[1][i] = 0;
 	}
-	for (int j = 0; j < 300; j++) {
+	for (int j = 0; j < 600; j++) {
+		cout << j << endl;
 		TM.allocateMemory();
 		TM.run();
 	}
