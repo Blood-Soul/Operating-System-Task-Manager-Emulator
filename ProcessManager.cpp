@@ -1,4 +1,4 @@
-﻿#include"ProcessManager.h"
+#include"ProcessManager.h"
 
 PCB* ProcessManager::getCreatedProcess(PCB* HugeProcess) {
     PCB* RetProcess = nullptr;
@@ -15,11 +15,14 @@ void ProcessManager::popCreatedProcess(PCB* process) {
     PCB* temp = Created_PCBQueue.front;
     while (temp->next != process);
     temp->next = process->next;
+    if(temp->next == nullptr){
+        Created_PCBQueue.rear = Created_PCBQueue.front;
+    }
 }
 
 void ProcessManager::putProcessReady(PCB* process, bool New) {
     process->State = REDEAY;
-    if (New == false) {
+    if (!New) {
         this->Ready_PCBQueue[1].rear->next = process;
         process->next = nullptr;
         this->Ready_PCBQueue[1].rear = process;
@@ -49,16 +52,16 @@ void ProcessManager::popProcessObstruct(int DeviceNo) {
     putProcessReady(ReadyProcess, false);
 }
 
-bool ProcessManager::createProcess(int PID, std::string PName, std::string UserID, int Priority, struct RunInfo PRunInfo) {
-    struct PCB* PcbPtr = new PCB;
+bool ProcessManager::createProcess(int PID, std::string PName, std::string UserID,int Priority, struct RunInfo PRunInfo) {
+    PCB* PcbPtr = new PCB;
     if (!PcbPtr) return false;
-
     PcbPtr->PID = PID;
     PcbPtr->PName.assign(PName);
     PcbPtr->UserID.assign(UserID);
     PcbPtr->Priority = Priority;
     PcbPtr->PRunInfo = PRunInfo;
-    PcbPtr->next = NULL;
+    PcbPtr->size = size;
+    PcbPtr->next = nullptr;
 
     PcbPtr->State = CREATED;
 
@@ -98,8 +101,8 @@ PCB* ProcessManager::dispatchProcess() {
     }
 
     //调度进程
-    PCB* DispatchProcess = NULL;
-    if (this->Ready_PCBQueue[1].front == this->Ready_PCBQueue[1].rear) DispatchProcess = NULL;
+    PCB* DispatchProcess = nullptr;
+    if (this->Ready_PCBQueue[1].front == this->Ready_PCBQueue[1].rear) DispatchProcess = nullptr;
     else {
         DispatchProcess = this->Ready_PCBQueue[1].front->next;
         this->Ready_PCBQueue[1].front->next = DispatchProcess->next;
@@ -136,20 +139,20 @@ void ProcessManager::deleteProcess(PCB* process) {
 
 ProcessManager::ProcessManager() {
     //"新建"队列初始化
-    struct PCB* HeadNodePtr = new PCB;
+    PCB* HeadNodePtr = new PCB;
     this->Created_PCBQueue.front = HeadNodePtr;
     this->Created_PCBQueue.rear = HeadNodePtr;
-    HeadNodePtr->next = NULL;
+    HeadNodePtr->next = nullptr;
 
     //"就绪"队列数组初始化
-    struct PCB* HeadNodePtr0 = new PCB;
-    struct PCB* HeadNodePtr1 = new PCB;
+    PCB* HeadNodePtr0 = new PCB;
+    PCB* HeadNodePtr1 = new PCB;
     this->Ready_PCBQueue[0].front = HeadNodePtr0;
     this->Ready_PCBQueue[0].rear = HeadNodePtr0;
     this->Ready_PCBQueue[1].front = HeadNodePtr1;
     this->Ready_PCBQueue[1].rear = HeadNodePtr1;
-    HeadNodePtr0->next = NULL;
-    HeadNodePtr1->next = NULL;
+    HeadNodePtr0->next = nullptr;
+    HeadNodePtr1->next = nullptr;
 
     //"阻塞"初始化
     for (int i = 0; i < DEVICENUM; i++) {
@@ -158,10 +161,10 @@ ProcessManager::ProcessManager() {
 }
 ProcessManager::~ProcessManager() {
     //新建队列析构
-    struct PCB* front = this->Created_PCBQueue.front;
-    struct PCB* rear = this->Created_PCBQueue.rear;
+    PCB* front = this->Created_PCBQueue.front;
+    PCB* rear = this->Created_PCBQueue.rear;
     while (front != rear) {
-        struct PCB* temp = front->next;
+        PCB* temp = front->next;
         front->next = temp->next;
         if (rear == temp) rear = front;
         delete temp;
@@ -200,8 +203,6 @@ ProcessManager::~ProcessManager() {
                 delete TempCopy->PBlock;
                 delete TempCopy;
             }
-
         }
-
     }
 }
