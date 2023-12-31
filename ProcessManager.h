@@ -1,34 +1,34 @@
-#pragma once
+ï»¿#pragma once
 
 #include"DataStructure.h"
 
 class ProcessManager {
 private:
-    PCB_Queue Created_PCBQueue;   //"ĞÂ½¨"¶ÓÁĞ
-    PCB_Queue Ready_PCBQueue[2];  //"¾ÍĞ÷"¶ÓÁĞ  //ÏßĞÔÓÅÏÈ¼¶Ëã·¨; 0±íÊ¾ĞÂ´´½¨½ø³Ì¶ÓÁĞ£¬1±íÊ¾ÏíÊÜ·şÎñ¶ÓÁĞ
-    struct PCB* Obstruct_PCBList[DEVICENUM]; //"×èÈû"±íµ¥
+    PCB_Queue Created_PCBQueue;   //"æ–°å»º"é˜Ÿåˆ—
+    PCB_Queue Ready_PCBQueue[2];  //"å°±ç»ª"é˜Ÿåˆ—  //çº¿æ€§ä¼˜å…ˆçº§ç®—æ³•; 0è¡¨ç¤ºæ–°åˆ›å»ºè¿›ç¨‹é˜Ÿåˆ—ï¼Œ1è¡¨ç¤ºäº«å—æœåŠ¡é˜Ÿåˆ—
+    struct PCB* Obstruct_PCBList[DEVICENUM]; //"é˜»å¡"è¡¨å•
 
 public:
     PCB* getCreatedProcess(PCB* HugeProcess = nullptr);
-    //»ñÈ¡ĞÂ½¨½ø³Ì,Ö»¶Á
+    //è·å–æ–°å»ºè¿›ç¨‹,åªè¯»
 
     void popCreatedProcess(PCB* process);
-    //´ÓĞÂ½¨¶ÓÁĞÖĞÈ¡³öÀ´
+    //ä»æ–°å»ºé˜Ÿåˆ—ä¸­å–å‡ºæ¥
 
     void putProcessReady(PCB* process, bool New);
-    //·ÅÈë¾ÍĞ÷¶ÓÁĞ:ĞÂ´´½¨½¨½ø³Ì¶ÓÁĞ£¨true£©+ÏíÊÜ·şÎñ¶ÓÁĞ(false)
+    //æ”¾å…¥å°±ç»ªé˜Ÿåˆ—:æ–°åˆ›å»ºå»ºè¿›ç¨‹é˜Ÿåˆ—ï¼ˆtrueï¼‰+äº«å—æœåŠ¡é˜Ÿåˆ—(false)
 
-    void popProcessObstruct(int DeviceNo);     //»ñÈ¡½ø³Ì
-    void putProcessObstruct(PCB* process, int DeviceNo);  //·ÅÈë×èÈû¶ÓÁĞ
-    bool createProcess(int PID, string PName, string UserID, int Priority, struct RunInfo PRunInfo); //´´½¨½ø³Ì
-    struct PCB* dispatchProcess(); //µ÷¶È½ø³Ì
-    interrupt runProcess(struct PCB* process); //Ö´ĞĞ0.1¸öÊ±¼äÆ¬£¬°ş¶á´¦Àí»ú(true)+²»°ş¶á´¦Àí»ú(false)
-    /* ·µ»ØÖµ£º
-     * 0: Õı³£ÔËĞĞ£¨Î´ÊÍ·ÅCPU£©
-     * 1: ×èÈû£¨ÊÍ·Å£©
-     * 2: ÖÕÖ¹£¨ÊÍ·Å£©
+    void popProcessObstruct(int DeviceNo);     //è·å–è¿›ç¨‹
+    void putProcessObstruct(PCB* process, int DeviceNo);  //æ”¾å…¥é˜»å¡é˜Ÿåˆ—
+    bool createProcess(int PID, string PName, string UserID, int Priority, struct RunInfo PRunInfo); //åˆ›å»ºè¿›ç¨‹
+    struct PCB* dispatchProcess(); //è°ƒåº¦è¿›ç¨‹
+    interrupt runProcess(struct PCB* process); //æ‰§è¡Œ0.1ä¸ªæ—¶é—´ç‰‡ï¼Œå‰¥å¤ºå¤„ç†æœº(true)+ä¸å‰¥å¤ºå¤„ç†æœº(false)
+    /* è¿”å›å€¼ï¼š
+     * 0: æ­£å¸¸è¿è¡Œï¼ˆæœªé‡Šæ”¾CPUï¼‰
+     * 1: é˜»å¡ï¼ˆé‡Šæ”¾ï¼‰
+     * 2: ç»ˆæ­¢ï¼ˆé‡Šæ”¾ï¼‰
      */
-    void deleteProcess(PCB* process);  //ÖÕÖ¹½ø³Ì;
+    void deleteProcess(PCB* process);  //ç»ˆæ­¢è¿›ç¨‹;
     ProcessManager();
     ~ProcessManager();
 };

@@ -1,4 +1,4 @@
-#include"MemoryManager.h"
+﻿#include"MemoryManager.h"
 
 void BlockManager::pushBlock(Block* block, Block* availList[]) {//把block插入可用表对应大小链表的队首
 	block->rlink = availList[block->kval]->rlink;

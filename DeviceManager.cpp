@@ -1,4 +1,4 @@
-#include"DeviceManager.h"
+﻿#include"DeviceManager.h"
 
 DeviceManager::DeviceManager() {
     for (int i = 0; i < DEVICENUM; i++) {
@@ -12,7 +12,7 @@ void DeviceManager::occupyDevice(int DeviceNo, double Time) {
     }
     else {
         // 处理设备编号超出范围的情况
-        cout << "设备编号超出范围。" << endl;
+        cout << "设备编号超出范围" << endl;
     }
 }
 

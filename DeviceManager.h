@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include<queue>
 #include<vector>
@@ -10,17 +10,17 @@ using std::endl;
 
 class DeviceManager {
 private:
-	queue<double> DeviceState[DEVICENUM];  // �����豸״̬
+	queue<double> DeviceState[DEVICENUM];  // 所有设备状态
 
 public:
-	// ���캯��
+	// 构造函数
 	DeviceManager();
 
 	void occupyDevice(int DeviceNo, double Time);
-	//ʹ���豸���ٶ�Ӧ�豸�ŵ�queue��β����һ��Time 
+	//使用设备：再对应设备号的queue队尾加上一个Time 
 
-	vector<int> runDevice(); //�����豸ʱ�����0.1;
-	//�����豸����ʹ�����豸��queue����Ԫ�ؼ�ȥ0.1���������ڸò��������Ԫ��Ϊ0���豸�ţ����ɾ���ö���Ԫ�� 
-	//�豸����vector���䣬��¼���г�������������豸�� 
+	vector<int> runDevice(); //所有设备时间减少0.1;
+	//运行设备：把使用中设备的queue队首元素减去0.1，并返回在该操作后队首元素为0的设备号，最后删除该队首元素 
+	//设备号用vector传输，记录所有出现上述情况的设备号 
 
 };

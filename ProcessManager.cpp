@@ -1,4 +1,4 @@
-#include"ProcessManager.h"
+﻿#include"ProcessManager.h"
 
 PCB* ProcessManager::getCreatedProcess(PCB* HugeProcess) {
     PCB* RetProcess = nullptr;

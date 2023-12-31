@@ -1,10 +1,10 @@
-#pragma once
+ï»¿#pragma once
 
 #include"DataStructure.h"
 using std::cout;
 using std::endl;
 
-class BlockManager {//¿ØÖÆblockÔÚ¿ÉÓÃ±íÉÏµÄpushºÍpop
+class BlockManager {//æ§åˆ¶blockåœ¨å¯ç”¨è¡¨ä¸Šçš„pushå’Œpop
 public:
 	void pushBlock(Block* block, Block* availList[]);
 	void popBlock(Block* block, Block* availList[]);
@@ -13,7 +13,7 @@ public:
 class MemoryManager {
 private:
 	struct Memory memory;
-	struct Block* availList[MAXKVAL + 1];//ÄÚ´æ¿ÉÓÃ±í
+	struct Block* availList[MAXKVAL + 1];//å†…å­˜å¯ç”¨è¡¨
 	BlockManager BM;
 public:
 	MemoryManager();

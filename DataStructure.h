@@ -1,24 +1,24 @@
-#pragma once
+ï»¿#pragma once
 
 #include<iostream>
 #include<math.h>
 using std::string;
 
-#define MAXKVAL 16		  //ÄÚ´æ¿é×î´ó¼¶Êı
+#define MAXKVAL 16		  //å†…å­˜å—æœ€å¤§çº§æ•°
 #define DEVICENUM 100
 #define WAITINGQUEUE_SPEED 2
-#define ENJOINGQUEUE_SPEED 1  //¾ÍĞ÷¶ÓÁĞÓÅÏÈ¼¶±ä»¯ËÙ¶È£¬ÒÔÊ±¼äÆ¬Îª»ù±¾µ¥Î»
+#define ENJOINGQUEUE_SPEED 1  //å°±ç»ªé˜Ÿåˆ—ä¼˜å…ˆçº§å˜åŒ–é€Ÿåº¦ï¼Œä»¥æ—¶é—´ç‰‡ä¸ºåŸºæœ¬å•ä½
 
-//×ÜÄÚ´æ
+//æ€»å†…å­˜
 struct Memory {
 	int Size;
 	int SystemAreaSize;
 	int UserAreaSize;
 };
 
-//ÄÚ´æ¿é
-struct Block {//³õÊ¼×´Ì¬µÄBlock×óÓÒÖ¸ÕëÖ¸Ïò×Ô¼º
-	int kval;//¼¶Êı
+//å†…å­˜å—
+struct Block {//åˆå§‹çŠ¶æ€çš„Blockå·¦å³æŒ‡é’ˆæŒ‡å‘è‡ªå·±
+	int kval;//çº§æ•°
 	struct Block* rlink;
 	struct Block* llink;
 	int address;
@@ -31,10 +31,10 @@ enum State {
 };
 
 struct RunInfo {
-    double RequireTime; //×Ü¹²ĞèÒªµÄÊ±¼ä
-    double OccupyTime;  //Õ¼ÓÃCPUµÄÊ±¼ä
+    double RequireTime; //æ€»å…±éœ€è¦çš„æ—¶é—´
+    double OccupyTime;  //å ç”¨CPUçš„æ—¶é—´
     double DeviceRunInfo[2][DEVICENUM];
-    //0±íÊ¾Éè±¸×Ü¹²ĞèÒªÊ±¼ä£¬1±íÊ¾Éè±¸¿ªÊ¼Ê¹ÓÃÊ±¼ä
+    //0è¡¨ç¤ºè®¾å¤‡æ€»å…±éœ€è¦æ—¶é—´ï¼Œ1è¡¨ç¤ºè®¾å¤‡å¼€å§‹ä½¿ç”¨æ—¶é—´
 };
 
 struct PCB {
@@ -44,14 +44,14 @@ struct PCB {
 	enum State State;
 	int Priority;
 	int StartAdd;
-	struct RunInfo PRunInfo;  //½ø³ÌÔËĞĞĞÅÏ¢ÃèÊö
+	struct RunInfo PRunInfo;  //è¿›ç¨‹è¿è¡Œä¿¡æ¯æè¿°
 	int size;
 	struct Block* PBlock;
 	struct PCB* next;
 };
 
 
-//PCB¶ÓÁĞ
+//PCBé˜Ÿåˆ—
 typedef struct {
 	struct PCB* front;
 	struct PCB* rear;
