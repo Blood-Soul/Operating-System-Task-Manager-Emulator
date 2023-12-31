@@ -3,6 +3,7 @@
 #include<iostream>
 #include<math.h>
 using std::string;
+using namespace std;
 
 #define MAXKVAL 16		  //内存块最大级数
 #define DEVICENUM 100
@@ -25,9 +26,9 @@ struct Block {//初始状态的Block左右指针指向自己
 };
 
 enum State {
-    CREATED,
-    REDEAY,
-    OBSTRUCTED
+	CREATED,
+	REDEAY,
+	OBSTRUCTED
 };
 
 struct RunInfo {

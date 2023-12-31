@@ -52,7 +52,7 @@ void ProcessManager::popProcessObstruct(int DeviceNo) {
     putProcessReady(ReadyProcess, false);
 }
 
-bool ProcessManager::createProcess(int PID, std::string PName, std::string UserID,int Priority, struct RunInfo PRunInfo) {
+bool ProcessManager::createProcess(int PID, std::string PName, std::string UserID, int Priority, struct RunInfo PRunInfo, int size) {
     PCB* PcbPtr = new PCB;
     if (!PcbPtr) return false;
     PcbPtr->PID = PID;
@@ -67,6 +67,8 @@ bool ProcessManager::createProcess(int PID, std::string PName, std::string UserI
 
     this->Created_PCBQueue.rear->next = PcbPtr;
     this->Created_PCBQueue.rear = PcbPtr;
+
+    cout << PID << "The process has been created successfully!" << endl;//仅做测试使用
 
     return true;
 }

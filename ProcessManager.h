@@ -20,7 +20,7 @@ public:
 
     void popProcessObstruct(int DeviceNo);     //获取进程
     void putProcessObstruct(PCB* process, int DeviceNo);  //放入阻塞队列
-    bool createProcess(int PID, string PName, string UserID, int Priority, struct RunInfo PRunInfo); //创建进程
+    bool createProcess(int PID, string PName, string UserID, int Priority, struct RunInfo PRunInfo, int size); //创建进程
     struct PCB* dispatchProcess(); //调度进程
     interrupt runProcess(struct PCB* process); //执行0.1个时间片，剥夺处理机(true)+不剥夺处理机(false)
     /* 返回值：
