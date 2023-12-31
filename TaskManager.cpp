@@ -38,7 +38,7 @@ public:
 		//运行进程和设备
 		if (CPU == NULL) {
 			CPU = PM.dispatchProcess();
-			cout << CPU->PID << "被调度" << endl;
+			if(CPU != nullptr) cout << CPU->PID << "被调度" << endl;
 			timeslice = 0;
 		}
 		if (CPU != NULL) {
