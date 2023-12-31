@@ -75,19 +75,16 @@ bool ProcessManager::createProcess(int PID, std::string PName, std::string UserI
 
 PCB* ProcessManager::dispatchProcess() {
     //处理新创建队列队首
-    if (this->Ready_PCBQueue[0].front != this->Ready_PCBQueue[0].rear) {
-        if (this->Ready_PCBQueue[1].front == this->Ready_PCBQueue[1].rear || this->Ready_PCBQueue[0].front->next->Priority >= this->Ready_PCBQueue[1].rear->Priority) {
-            //从新创建队列取出进程
-            PCB* temp = this->Ready_PCBQueue[0].front->next;
-            this->Ready_PCBQueue[0].front->next = temp->next;
-            if (temp == Ready_PCBQueue[0].rear) Ready_PCBQueue[0].rear = Ready_PCBQueue[0].front;
-            //放入享受队列队尾
-            this->Ready_PCBQueue[1].rear->next = temp;
-            this->Ready_PCBQueue[1].rear = temp;
-            temp->next = nullptr;
-        }
+    while((this->Ready_PCBQueue[0].front != this->Ready_PCBQueue[0].rear) && (this->Ready_PCBQueue[1].front == this->Ready_PCBQueue[1].rear || this->Ready_PCBQueue[0].front->next->Priority >= this->Ready_PCBQueue[1].rear->Priority)){
+        //从新创建队列取出进程
+        PCB* temp = this->Ready_PCBQueue[0].front->next;
+        this->Ready_PCBQueue[0].front->next = temp->next;
+        if (temp == Ready_PCBQueue[0].rear) Ready_PCBQueue[0].rear = Ready_PCBQueue[0].front;
+        //放入享受队列队尾
+        this->Ready_PCBQueue[1].rear->next = temp;
+        this->Ready_PCBQueue[1].rear = temp;
+        temp->next = nullptr;
     }
-
     //优先级动态变化
     PCB* front0 = this->Ready_PCBQueue[0].front;
     PCB* front1 = this->Ready_PCBQueue[1].front;
@@ -116,19 +113,20 @@ PCB* ProcessManager::dispatchProcess() {
 interrupt ProcessManager::runProcess(struct PCB* process) {
     process->PRunInfo.OccupyTime += 0.1;
     interrupt RetSemaphore = { 0 };
+
     //判断该进程是否阻塞
     RunInfo runInfo = process->PRunInfo;
     for (int i = 0; i < DEVICENUM; i++) {
-        if (runInfo.DeviceRunInfo[0][i] != 0 && runInfo.OccupyTime == runInfo.DeviceRunInfo[1][i]) {
+        if (runInfo.DeviceRunInfo[0][i] != 0 && abs(runInfo.OccupyTime - runInfo.DeviceRunInfo[1][i])<0.000001) {
             RetSemaphore.semaphore = 1;
             RetSemaphore.DeviceNo = i;
-            RetSemaphore.OccupyTime = runInfo.DeviceRunInfo[1][i];
+            RetSemaphore.OccupyTime = runInfo.DeviceRunInfo[0][i];
             break;
         }
     }
 
     //判断该进程是否终止
-    if (runInfo.OccupyTime == runInfo.RequireTime) {
+    if (abs(runInfo.OccupyTime - runInfo.RequireTime)<0.000001) {
         RetSemaphore.semaphore = 2;
     }
 
