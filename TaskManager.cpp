@@ -43,11 +43,11 @@ public:
 		}
 		if (CPU != NULL) {
 			//cout << CPU->PRunInfo.OccupyTime << endl;
-			cout << timeslice << endl;
+			//cout << timeslice << endl;
 			struct interrupt intSemaphore = PM.runProcess(CPU);
 			vector<int>doneDeviceNo = DM.runDevice();
 			timeslice++;
-			//cout << intSemaphore.semaphore << endl;
+			cout << intSemaphore.semaphore << endl;
 			if (intSemaphore.semaphore == 1) {
 				cout << CPU->PID << "进程中断" << endl;//仅做测试使用
 				PM.putProcessObstruct(CPU, intSemaphore.DeviceNo);
