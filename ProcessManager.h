@@ -9,6 +9,10 @@ private:
     struct PCB* Obstruct_PCBList[DEVICENUM]; //"阻塞"表单
 
 public:
+    PCB_Queue getCreated_PCBQueue();
+    PCB_Queue* getReady_PCBQueue();
+    PCB ** getObstruct_PCBList();
+
     PCB* getCreatedProcess(PCB* HugeProcess = nullptr);
     //获取新建进程,只读
 

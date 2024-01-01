@@ -1,5 +1,17 @@
 #include"ProcessManager.h"
 
+PCB_Queue ProcessManager::getCreated_PCBQueue() {
+    return Created_PCBQueue;
+}
+
+PCB_Queue *ProcessManager::getReady_PCBQueue() {
+    return Ready_PCBQueue;
+}
+
+PCB ** ProcessManager::getObstruct_PCBList() {
+    return Obstruct_PCBList;
+}
+
 PCB* ProcessManager::getCreatedProcess(PCB* HugeProcess) {
     PCB* RetProcess = nullptr;
     if (HugeProcess == nullptr) {
