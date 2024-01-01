@@ -15,6 +15,19 @@ public:
 		CPU = NULL;
 		timeslice = 0;
 	}
+
+    PCB_Queue getCreated_PCBQueue(){
+        return PM.getCreated_PCBQueue();
+    };
+
+    PCB_Queue* getReady_PCBQueue(){
+        return PM.getReady_PCBQueue();
+    };
+
+    PCB ** getObstruct_PCBList(){
+        return PM.getObstruct_PCBList();
+    };
+
 	void input(int PID, std::string PName, std::string UserID, int Priority, struct RunInfo PRunInfo, int size) {
 		//输入进程并创建
 		PM.createProcess(PID, PName, UserID, Priority, PRunInfo, size);
