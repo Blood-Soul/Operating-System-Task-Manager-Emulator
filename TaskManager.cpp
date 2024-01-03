@@ -28,7 +28,19 @@ public:
         return PM.getObstruct_PCBList();
     };
 
-	void input(int PID, std::string PName, std::string UserID, int Priority, struct RunInfo PRunInfo, int size) {
+    PCB * getExecuting_PCB(){
+        return CPU;
+    }
+
+    void createNewTask(string TaskName){
+
+    }
+
+    void terminateprocess(string processName){
+
+    }
+
+	void input(int PID,std::string PName, std::string UserID, int Priority, struct RunInfo PRunInfo, int size) {
 		//输入进程并创建
 		PM.createProcess(PID, PName, UserID, Priority, PRunInfo, size);
 	}
