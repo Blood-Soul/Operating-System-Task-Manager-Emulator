@@ -47,6 +47,7 @@ struct PCB {
 	int StartAdd;
 	struct RunInfo PRunInfo;  //进程运行信息描述
 	int size;
+    double CpuUtilization;
 	struct Block* PBlock;
 	struct PCB* next;
 };

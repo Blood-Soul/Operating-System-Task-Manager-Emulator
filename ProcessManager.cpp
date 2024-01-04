@@ -12,6 +12,21 @@ PCB ** ProcessManager::getObstruct_PCBList() {
     return Obstruct_PCBList;
 }
 
+void ProcessManager::renewCpuUtilization(){
+    int count = 0;
+    PCB * front  = Ready_PCBQueue[1].front;
+    while(front != Ready_PCBQueue[1].rear){
+        count++;
+        front = front->next;
+    }
+    front = Ready_PCBQueue[1].front;
+    while(front != Ready_PCBQueue[1].rear){
+        if(count == 0) front->next->CpuUtilization = 0;
+        else front->next->CpuUtilization = 1.0/count;
+        front = front->next;
+    }
+}
+
 PCB*  ProcessManager::popProcessName(std::string name,int& DeviceNo,int& No) {
     //新建队列
     PCB* front = Created_PCBQueue.front;

@@ -12,6 +12,7 @@ public:
     PCB_Queue getCreated_PCBQueue();
     PCB_Queue* getReady_PCBQueue();
     PCB ** getObstruct_PCBList();
+    void renewCpuUtilization();
 
     PCB* getCreatedProcess(PCB* HugeProcess = nullptr);
     //获取新建进程,只读
