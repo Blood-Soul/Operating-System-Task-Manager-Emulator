@@ -15,7 +15,51 @@ public:
 		CPU = NULL;
 		timeslice = 0;
 	}
-	void input(int PID, std::string PName, std::string UserID, int Priority, struct RunInfo PRunInfo, int size) {
+
+    PCB_Queue getCreated_PCBQueue(){
+        return PM.getCreated_PCBQueue();
+    };
+
+    PCB_Queue* getReady_PCBQueue(){
+        return PM.getReady_PCBQueue();
+    };
+
+    PCB ** getObstruct_PCBList(){
+        return PM.getObstruct_PCBList();
+    };
+
+    PCB * getExecuting_PCB(){
+        return CPU;
+    }
+
+    void createNewTask(string TaskName){
+
+    }
+
+    void terminateProcess(string processName){
+        if(CPU!= nullptr && CPU->PName == processName){
+            cout<<"sucessfully delete "<<CPU->PName <<endl;  //仅测试使用
+            MM.release(CPU->PBlock);
+            delete CPU;
+            CPU = nullptr;
+        }
+        else{
+            int DeviceNo =-1,No = -1;
+            PCB * process = PM.popProcessName(processName,DeviceNo,No);
+            if(process == nullptr){
+                cout<<"did not find the process!"<<endl;
+                return;
+            }
+            cout<<"sucessfully delete "<<process->PName <<endl;  //仅测试使用
+            MM.release(process->PBlock);
+            PM.deleteProcess(process);
+            if(DeviceNo != -1){
+                DM.deleteDevice(DeviceNo,No);
+            }
+        }
+    }
+
+	void input(int PID,std::string PName, std::string UserID, int Priority, struct RunInfo PRunInfo, int size) {
 		//输入进程并创建
 		PM.createProcess(PID, PName, UserID, Priority, PRunInfo, size);
 	}
@@ -71,6 +115,8 @@ public:
 				PM.popProcessObstruct(doneDeviceNo[i]);
 			}
 		}
+        //更新CPU利用率
+        PM.renewCpuUtilization();
 	}
 	~TaskManager() {
 		CPU = NULL;
@@ -85,18 +131,22 @@ int main() {
 	for (int i = 0; i < DEVICENUM; i++) {
 		ri.DeviceRunInfo[0][i] = ri.DeviceRunInfo[1][i] = 0;
 	}
+    string name = "a";
 	for (int i = 0; i < 5; i++) {
 		ri.DeviceRunInfo[0][i] = i;
 		ri.DeviceRunInfo[1][i] = 2;
-		TM.input(i, "a" + i, "xbj", 3, ri, 1000);
+		TM.input(i, name.append(to_string(i)), "xbj", 3, ri, 1000);
 		//ri.DeviceRunInfo[0][i] = 0;
 		ri.DeviceRunInfo[1][i] = 0;
 	}
-	for (int j = 0; j < 600; j++) {
+	for (int j = 0; j < 100; j++) {
 		cout << j << endl;
 		TM.allocateMemory();
 		TM.run();
 	}
+    TM.terminateProcess("a01234");
+    TM.terminateProcess("a0123");
+
 	cout << "没死！" << endl;
 	system("pause");
 	return 0;

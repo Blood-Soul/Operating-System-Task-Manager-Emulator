@@ -1,5 +1,106 @@
 #include"ProcessManager.h"
 
+PCB_Queue ProcessManager::getCreated_PCBQueue() {
+    return Created_PCBQueue;
+}
+
+PCB_Queue *ProcessManager::getReady_PCBQueue() {
+    return Ready_PCBQueue;
+}
+
+PCB ** ProcessManager::getObstruct_PCBList() {
+    return Obstruct_PCBList;
+}
+
+void ProcessManager::renewCpuUtilization(){
+    int count = 0;
+    PCB * front  = Ready_PCBQueue[1].front;
+    while(front != Ready_PCBQueue[1].rear){
+        count++;
+        front = front->next;
+    }
+    front = Ready_PCBQueue[1].front;
+    while(front != Ready_PCBQueue[1].rear){
+        if(count == 0) front->next->CpuUtilization = 0;
+        else front->next->CpuUtilization = 1.0/count;
+        front = front->next;
+    }
+}
+
+PCB*  ProcessManager::popProcessName(std::string name,int& DeviceNo,int& No) {
+    //新建队列
+    PCB* front = Created_PCBQueue.front;
+    PCB* rear = Created_PCBQueue.rear;
+    while(front != rear){
+        if(front->next->PName == name){
+            PCB* temp = front;
+            PCB* process = front->next;
+            temp->next = process->next;
+            if(temp->next == nullptr){
+                Ready_PCBQueue[0].rear = Ready_PCBQueue[0].front;
+            }
+            return process;
+        }
+        front = front->next;
+    }
+    //就绪队列
+    front = Ready_PCBQueue[0].front;
+    rear = Ready_PCBQueue[0].rear;
+    while(front != rear){
+        if(front->next->PName == name){
+            PCB* temp = front;
+            PCB* process = front->next;
+            temp->next = process->next;
+            if(temp->next == nullptr){
+                Ready_PCBQueue[0].rear = Ready_PCBQueue[0].front;
+            }
+            return process;
+        }
+        front = front->next;
+    }
+    front = Ready_PCBQueue[1].front;
+    rear = Ready_PCBQueue[1].rear;
+    while(front != rear){
+        if(front->next->PName == name){
+            PCB* temp = front;
+            PCB* process = front->next;
+            temp->next = process->next;
+            if(temp->next == nullptr){
+                Ready_PCBQueue[1].rear = Ready_PCBQueue[1].front;
+            }
+            return process;
+        }
+        front = front->next;
+    }
+    //阻塞队列
+    for(int i=0;i<DEVICENUM;i++){
+        if(Obstruct_PCBList[i] != nullptr){
+            if(Obstruct_PCBList[i]->PName == name){
+                PCB* process = Obstruct_PCBList[i];
+                Obstruct_PCBList[i] = Obstruct_PCBList[i]->next;
+                DeviceNo = i;
+                No = 0;
+                return process;
+            }
+            else{
+                int count = 0;
+                PCB* temp = Obstruct_PCBList[i];
+                while(temp->next != nullptr){
+                    count++;
+                    if(temp->next->PName == name){
+                        PCB* process = temp->next;
+                        temp->next = process->next;
+                        DeviceNo = i;
+                        No = count;
+                        return process;
+                    }
+                }
+            }
+        }
+    }
+    return nullptr;
+}
+
 PCB* ProcessManager::getCreatedProcess(PCB* HugeProcess) {
     PCB* RetProcess = nullptr;
     if (HugeProcess == nullptr) {
@@ -35,6 +136,7 @@ void ProcessManager::putProcessReady(PCB* process, bool New) {
 }
 
 void ProcessManager::putProcessObstruct(PCB* process, int DeviceNo) {
+    process->State = OBSTRUCTED;
     if (Obstruct_PCBList[DeviceNo] == nullptr) {
         Obstruct_PCBList[DeviceNo] = process;
     }
