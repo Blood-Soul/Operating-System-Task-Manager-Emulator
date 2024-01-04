@@ -6,6 +6,27 @@ DeviceManager::DeviceManager() {
     }
 }
 
+void DeviceManager::deleteDevice(int DeviveNo, int No) {
+    queue<double> destQueue;
+    int count = -1;
+    //删除对应数据
+    while(!DeviceState[DeviveNo].empty()){
+        count++;
+        if(count == No){
+            DeviceState[DeviveNo].pop();
+        }
+        else{
+            destQueue.push(DeviceState[DeviveNo].front());
+            DeviceState[DeviveNo].pop();
+        }
+    }
+    //复制回原队列
+    while(!destQueue.empty()){
+        DeviceState[DeviveNo].push(destQueue.front());
+        destQueue.pop();
+    }
+}
+
 void DeviceManager::occupyDevice(int DeviceNo, double Time) {
     if (DeviceNo >= 0 && DeviceNo < DEVICENUM) {
         DeviceState[DeviceNo].push(Time);//将占用时间加入状态队列

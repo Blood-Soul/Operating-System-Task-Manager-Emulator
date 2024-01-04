@@ -16,6 +16,8 @@ public:
 	// 构造函数
 	DeviceManager();
 
+    void deleteDevice(int DeviveNo,int No);
+
 	void occupyDevice(int DeviceNo, double Time);
 	//使用设备：再对应设备号的queue队尾加上一个Time 
 
