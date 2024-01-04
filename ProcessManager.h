@@ -33,6 +33,7 @@ public:
      * 2: 终止（释放）
      */
     void deleteProcess(PCB* process);  //终止进程;
+    PCB* popProcessName(string name,int& DeviceNo,int& No); //返回终止进程（根据进程名）
     ProcessManager();
     ~ProcessManager();
 };
